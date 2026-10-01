@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Glow / Squircle Container -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" stroke="#818CF8" stroke-width="2" />
+  
+  <!-- Screen Area -->
+  <rect x="12" y="10" width="40" height="13" rx="5" fill="url(#screenGrad)" stroke="#38BDF8" stroke-width="1.5" />
+  <rect x="36" y="14" width="11" height="5" rx="1.5" fill="#38BDF8" />
+  
+  <!-- Calculator Buttons Matrix -->
+  <!-- Row 1 -->
+  <rect x="12" y="27" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="24" y="27" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="36" y="27" width="16" height="7" rx="2.5" fill="#F43F5E" />
+  
+  <!-- Row 2 -->
+  <rect x="12" y="37" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="24" y="37" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="36" y="37" width="7" height="7" rx="2.5" fill="#38BDF8" />
+  <rect x="45" y="37" width="7" height="7" rx="2.5" fill="#38BDF8" />
+
+  <!-- Row 3 -->
+  <rect x="12" y="47" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="24" y="47" width="9" height="7" rx="2.5" fill="#FFFFFF" fill-opacity="0.9" />
+  <rect x="36" y="47" width="16" height="7" rx="2.5" fill="#10B981" />
+  
+  <!-- Active Sparkle Indicator -->
+  <circle cx="51" cy="9" r="3.5" fill="#34D399" stroke="#0F172A" stroke-width="1.5" />
+</svg>
