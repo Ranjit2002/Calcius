@@ -8,7 +8,9 @@ import {
   Check, 
   Sparkles,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  X,
+  Search
 } from 'lucide-react';
 import { CALCULATORS } from '../../data/calculators';
 import type { CalculatorMeta } from '../../types/calculator';
@@ -23,6 +25,7 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({ calc, childr
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [filterQuery, setFilterQuery] = useState('');
   const switcherRef = useRef<HTMLDivElement>(null);
 
   // Close switcher on outside click
@@ -30,6 +33,7 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({ calc, childr
     const handleOutside = (e: MouseEvent) => {
       if (switcherRef.current && !switcherRef.current.contains(e.target as Node)) {
         setSwitcherOpen(false);
+        setFilterQuery('');
       }
     };
     document.addEventListener('mousedown', handleOutside);
@@ -47,6 +51,13 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({ calc, childr
       // fallback
     }
   };
+
+  const filteredCalculators = CALCULATORS.filter(
+    (c) =>
+      c.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      c.quickInfo.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      c.keywords.some((k) => k.toLowerCase().includes(filterQuery.toLowerCase()))
+  );
 
   // Find 3 other related calculators from same or other categories
   const relatedCalculators = CALCULATORS
@@ -70,10 +81,10 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({ calc, childr
               <ArrowLeft className="w-4 h-4" />
               <span>All Calculators</span>
             </Link>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
-            <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${calc.gradient}`} />
-              {calc.name}
+            <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+            <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5 truncate max-w-[150px] sm:max-w-none">
+              <span className={`w-2 h-2 rounded-full bg-gradient-to-r ${calc.gradient} shrink-0`} />
+              <span className="truncate">{calc.name}</span>
             </span>
           </div>
 
@@ -92,32 +103,92 @@ export const CalculatorLayout: React.FC<CalculatorLayoutProps> = ({ calc, childr
               </button>
 
               {switcherOpen && (
-                <div className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Jump to Calculator
-                  </div>
-                  <div className="space-y-0.5">
-                    {CALCULATORS.map((item) => (
+                <>
+                  {/* Mobile backdrop */}
+                  <div
+                    className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 sm:hidden animate-in fade-in duration-150"
+                    onClick={() => {
+                      setSwitcherOpen(false);
+                      setFilterQuery('');
+                    }}
+                  />
+
+                  {/* Switch Tool Container */}
+                  <div className="fixed inset-x-3 top-20 sm:top-auto sm:inset-x-auto sm:absolute sm:right-0 sm:mt-2 w-auto sm:w-80 max-h-[75vh] sm:max-h-96 overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl z-50 flex flex-col animate-in fade-in zoom-in-95 duration-150">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-indigo-500" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                          Switch Calculator
+                        </span>
+                      </div>
                       <button
-                        key={item.id}
                         onClick={() => {
                           setSwitcherOpen(false);
-                          navigate(item.path);
+                          setFilterQuery('');
                         }}
-                        className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs text-left transition-all ${
-                          item.id === calc.id
-                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
+                        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                        title="Close"
                       >
-                        <div className={`p-1 rounded-md bg-gradient-to-br ${item.gradient} text-white`}>
-                          <DynamicIcon name={item.iconName} className="w-3 h-3" />
-                        </div>
-                        <span className="truncate">{item.name}</span>
+                        <X className="w-4 h-4" />
                       </button>
-                    ))}
+                    </div>
+
+                    {/* Filter search input */}
+                    <div className="p-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                      <div className="relative">
+                        <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="Filter calculators..."
+                          value={filterQuery}
+                          onChange={(e) => setFilterQuery(e.target.value)}
+                          className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Calculator list */}
+                    <div className="overflow-y-auto p-1.5 space-y-0.5 flex-1">
+                      {filteredCalculators.length === 0 ? (
+                        <div className="py-6 text-center text-xs text-slate-400">
+                          No calculators match "{filterQuery}"
+                        </div>
+                      ) : (
+                        filteredCalculators.map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => {
+                              setSwitcherOpen(false);
+                              setFilterQuery('');
+                              navigate(item.path);
+                            }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs text-left transition-all cursor-pointer ${
+                              item.id === calc.id
+                                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80'
+                            }`}
+                          >
+                            <div className={`p-1.5 rounded-lg bg-gradient-to-br ${item.gradient} text-white shadow-xs shrink-0`}>
+                              <DynamicIcon name={item.iconName} className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="truncate font-semibold">{item.name}</div>
+                              <div className="text-[10px] text-slate-400 truncate">{item.quickInfo}</div>
+                            </div>
+                            {item.badge && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 shrink-0">
+                                {item.badge}
+                              </span>
+                            )}
+                          </button>
+                        ))
+                      )}
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
 

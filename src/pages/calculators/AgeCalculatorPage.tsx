@@ -16,13 +16,10 @@ import confetti from 'canvas-confetti';
 export const AgeCalculatorPage: React.FC = () => {
   const meta = CALCULATORS.find((c) => c.id === 'age')!;
 
-  // Default to 25 years ago in DD, MM, YYYY
-  const defaultBirth = new Date();
-  defaultBirth.setFullYear(defaultBirth.getFullYear() - 25);
-  
-  const [birthDay, setBirthDay] = useState(String(defaultBirth.getDate()).padStart(2, '0'));
-  const [birthMonth, setBirthMonth] = useState(String(defaultBirth.getMonth() + 1).padStart(2, '0'));
-  const [birthYear, setBirthYear] = useState(String(defaultBirth.getFullYear()));
+  // Default Date of Birth: 01 / 01 / 2000
+  const [birthDay, setBirthDay] = useState('01');
+  const [birthMonth, setBirthMonth] = useState('01');
+  const [birthYear, setBirthYear] = useState('2000');
 
   const today = new Date();
   const [targetDay, setTargetDay] = useState(String(today.getDate()).padStart(2, '0'));
@@ -37,6 +34,15 @@ export const AgeCalculatorPage: React.FC = () => {
       setCurrentSec(new Date().getSeconds());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Trigger flower/confetti animation strictly ONE TIME when user visits the page
+  useEffect(() => {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
   }, []);
 
   const [ageStats, setAgeStats] = useState({
@@ -189,14 +195,6 @@ export const AgeCalculatorPage: React.FC = () => {
       chineseZodiac: getChineseZodiac(bY),
       isBirthdayToday
     });
-
-    if (isBirthdayToday) {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    }
   }, [birthDay, birthMonth, birthYear, targetDay, targetMonth, targetYear, currentSec]);
 
   const triggerCelebrate = () => {

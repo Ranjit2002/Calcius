@@ -208,7 +208,7 @@ export const Navbar: React.FC = () => {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 py-4 max-h-[80vh] overflow-y-auto">
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-              All 17 Calculators & Converters
+              All 18 Calculators & Converters
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {CALCULATORS.map((calc) => (
