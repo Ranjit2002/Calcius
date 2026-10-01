@@ -10,6 +10,23 @@ import {
   Trash2
 } from 'lucide-react';
 
+const SCI_BUTTONS = [
+  { id: 'sin', label: 'sin', title: 'Sine' },
+  { id: 'cos', label: 'cos', title: 'Cosine' },
+  { id: 'tan', label: 'tan', title: 'Tangent' },
+  { id: 'sin_inv', label: 'sin⁻¹', title: 'Inverse Sine (arcsin)' },
+  { id: 'cos_inv', label: 'cos⁻¹', title: 'Inverse Cosine (arccos)' },
+  { id: 'tan_inv', label: 'tan⁻¹', title: 'Inverse Tangent (arctan)' },
+  { id: '1/x', label: '1/x', title: 'Reciprocal (1/x)' },
+  { id: 'sqrt', label: '√x', title: 'Square Root' },
+  { id: 'sqr', label: 'x²', title: 'Square (x²)' },
+  { id: 'cube', label: 'x³', title: 'Cube (x³)' },
+  { id: 'log', label: 'log', title: 'Logarithm (base 10)' },
+  { id: 'ln', label: 'ln', title: 'Natural Logarithm (ln)' },
+  { id: 'pi', label: 'π', title: 'Pi (3.14159...)' },
+  { id: 'e', label: 'e', title: 'Euler Number (2.71828...)' },
+];
+
 export const NormalCalculatorPage: React.FC = () => {
   const meta = CALCULATORS.find((c) => c.id === 'normal')!;
   
@@ -116,6 +133,23 @@ export const NormalCalculatorPage: React.FC = () => {
     if (isNaN(val)) return;
 
     let res = 0;
+    const labelMap: Record<string, string> = {
+      sin: `sin(${val})`,
+      cos: `cos(${val})`,
+      tan: `tan(${val})`,
+      sin_inv: `sin⁻¹(${val})`,
+      cos_inv: `cos⁻¹(${val})`,
+      tan_inv: `tan⁻¹(${val})`,
+      sqrt: `√(${val})`,
+      sqr: `(${val})²`,
+      cube: `(${val})³`,
+      log: `log(${val})`,
+      ln: `ln(${val})`,
+      '1/x': `1/(${val})`,
+      pi: 'π',
+      e: 'e'
+    };
+
     switch (func) {
       case 'sin':
         res = Math.sin(isRad ? val : (val * Math.PI) / 180);
@@ -125,6 +159,31 @@ export const NormalCalculatorPage: React.FC = () => {
         break;
       case 'tan':
         res = Math.tan(isRad ? val : (val * Math.PI) / 180);
+        break;
+      case 'sin_inv':
+      case 'asin':
+        if (val < -1 || val > 1) {
+          res = NaN;
+        } else {
+          const rad = Math.asin(val);
+          res = isRad ? rad : (rad * 180) / Math.PI;
+        }
+        break;
+      case 'cos_inv':
+      case 'acos':
+        if (val < -1 || val > 1) {
+          res = NaN;
+        } else {
+          const rad = Math.acos(val);
+          res = isRad ? rad : (rad * 180) / Math.PI;
+        }
+        break;
+      case 'tan_inv':
+      case 'atan':
+        {
+          const rad = Math.atan(val);
+          res = isRad ? rad : (rad * 180) / Math.PI;
+        }
         break;
       case 'sqrt':
         res = val >= 0 ? Math.sqrt(val) : NaN;
@@ -157,7 +216,14 @@ export const NormalCalculatorPage: React.FC = () => {
     if (isNaN(res)) {
       setDisplay('Error');
     } else {
-      setDisplay(Number.isInteger(res) ? String(res) : String(Number(res.toFixed(8))));
+      const formatted = Number.isInteger(res) ? String(res) : String(Number(res.toFixed(8)));
+      setDisplay(formatted);
+      const label = labelMap[func] || `${func}(${val})`;
+      setEquation(`${label} =`);
+      setHistory((prev) => [
+        { eq: label, res: formatted, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+        ...prev.slice(0, 19)
+      ]);
     }
   };
 
@@ -279,14 +345,19 @@ export const NormalCalculatorPage: React.FC = () => {
           <div className="space-y-3">
             {/* Scientific Extra Row */}
             {isScientific && (
-              <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 animate-in fade-in duration-200">
-                {['sin', 'cos', 'tan', 'sqrt', 'sqr', 'cube', 'log', 'ln', '1/x', 'pi', 'e'].map((fn) => (
+              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 animate-in fade-in duration-200">
+                {SCI_BUTTONS.map((btn) => (
                   <button
-                    key={fn}
-                    onClick={() => handleSciFunction(fn)}
-                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer"
+                    key={btn.id}
+                    onClick={() => handleSciFunction(btn.id)}
+                    title={btn.title}
+                    className={`p-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer flex items-center justify-center ${
+                      btn.id === 'sin_inv' || btn.id === 'cos_inv'
+                        ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'
+                    }`}
                   >
-                    {fn}
+                    {btn.label}
                   </button>
                 ))}
               </div>
